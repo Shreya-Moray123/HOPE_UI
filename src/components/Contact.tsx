@@ -81,6 +81,9 @@ const ContactSection = () => {
   const [formData, setFormData] = useState({ email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [orbs, setOrbs] = useState<
+    { delay: number; size: number; opacity: number; top: string; left: string }[]
+  >([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -95,6 +98,16 @@ const ContactSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  useEffect(() => {
+    const generatedOrbs = [
+      { delay: 0, size: 30, opacity: 0.1, top: "40%", left: "25%" },
+      { delay: 1, size: 20, opacity: 0.15, top: "38%", left: "28%" },
+      { delay: 2, size: 25, opacity: 0.08, top: "20%", left: "32%" },
+      { delay: 3, size: 15, opacity: 0.12, top: "15%", left: "20%" },
+    ];
+    setOrbs(generatedOrbs);
+  }, []);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -103,7 +116,6 @@ const ContactSection = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsSubmitting(false);
     setFormData({ email: "", message: "" });
@@ -113,19 +125,23 @@ const ContactSection = () => {
     delay = 0,
     size = 20,
     opacity = 0.1,
+    top = "30%",
+    left = "20%",
   }: {
     delay?: number;
     size?: number;
     opacity?: number;
+    top?: string;
+    left?: string;
   }) => (
     <div
-      className={`absolute rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse`}
+      className="absolute rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse"
       style={{
         width: size,
         height: size,
         opacity,
-        left: `${20 + Math.sin(Date.now() * 0.001 + delay) * 10}%`,
-        top: `${30 + Math.cos(Date.now() * 0.001 + delay) * 15}%`,
+        left,
+        top,
         animationDelay: `${delay}s`,
         animationDuration: "4s",
       }}
@@ -133,15 +149,16 @@ const ContactSection = () => {
   );
 
   return (
-    <section id="contact"
-    className="relative min-h-screen bg-gradient-to-br from-slate-100 via-purple-50 to-indigo-100 overflow-hidden">
+    <section
+      id="contact"
+      className="relative min-h-screen bg-gradient-to-br from-slate-100 via-purple-50 to-indigo-100 overflow-hidden"
+    >
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.1),transparent_70%)]" />
-        <FloatingOrb delay={0} size={30} opacity={0.1} />
-        <FloatingOrb delay={1} size={20} opacity={0.15} />
-        <FloatingOrb delay={2} size={25} opacity={0.08} />
-        <FloatingOrb delay={3} size={15} opacity={0.12} />
+        {orbs.map((orb, index) => (
+          <FloatingOrb key={index} {...orb} />
+        ))}
       </div>
 
       {/* Interactive cursor effect */}
@@ -334,3 +351,4 @@ const ContactSection = () => {
 };
 
 export default ContactSection;
+
